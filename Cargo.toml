@@ -1,0 +1,16 @@
+[package]
+name = "swizzy"
+version = "1.0.0"
+edition = "2025"
+authors = ["Sarath C <csarath@gmail.com>"]
+description = "Formats SwiftLint output grouped by file"
+license = "MIT"
+repository = "https://github.com/sharat/swizzy-rs"
+
+[dependencies]
+anyhow = "1.0.79"       # Error handling
+atty = "0.2.14"        # Terminal detection
+clap = "3.2.25"        # Command line argument parsing
+colored = "2.1.0"       # Terminal colors
+serde = { version = "1.0.193", features = ["derive"] } # JSON serialization
+serde_json = "1.0.108" # JSON parsing
