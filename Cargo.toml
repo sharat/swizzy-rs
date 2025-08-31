@@ -1,6 +1,6 @@
 [package]
 name = "swizzy"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2024"
 authors = ["Sarath C <csarath@gmail.com>"]
 description = "Formats SwiftLint output grouped by file"
