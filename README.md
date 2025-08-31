@@ -18,6 +18,12 @@ swiftlint lint --reporter json | swizzy
 # or
 swizzy # run from a directory containing swift source files
 ```
+
+Notes:
+- Exit code is 1 when any problems are found; otherwise 0.
+- Colors are disabled when stdout is not a TTY.
+- Each issue line includes file:line[:col] to enable clickable links in editors.
+
 # Options
 
 ```

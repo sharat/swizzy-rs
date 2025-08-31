@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
 use atty::Stream;
 use colored::*;
+use colored::control;
 use serde::Deserialize;
 use std::{
     collections::BTreeMap,
@@ -23,6 +24,9 @@ fn main() -> Result<()> {
         .version(env!("CARGO_PKG_VERSION"))
         .about("Formats SwiftLint JSON output")
         .get_matches();
+
+    // Disable colors when stdout is not a TTY
+    control::set_override(atty::is(Stream::Stdout));
 
     let input = if atty::is(Stream::Stdin) {
         run_swiftlint()?
@@ -56,19 +60,20 @@ fn main() -> Result<()> {
         total += issues.len();
 
         for issue in issues {
-            let line = issue.line.unwrap_or(0);
-            let col = issue.character.unwrap_or(0);
-            let severity = match issue.severity.as_str() {
-                "Warning" => "warning".yellow(),
+            let line = issue.line.unwrap_or(1);
+            let severity = match issue.severity.to_lowercase().as_str() {
+                "warning" => "warning".yellow(),
+                "error" => "error".red(),
                 _ => "error".red(),
             };
 
-            // Format that VS Code can parse as clickable links
+            // Include file path per line for clickable links in editors
+            let loc = if let Some(c) = issue.character { format!("{}:{}", line, c) } else { format!("{}", line) };
             output.push_str(&format!(
                 "  {} {}:{}  {}  {}\n",
                 " ".dimmed(),
-                line.to_string().dimmed(),
-                col.to_string().dimmed(),
+                file.dimmed(),
+                loc.dimmed(),
                 severity,
                 issue.reason.trim_end_matches('.')
             ));
@@ -89,7 +94,11 @@ fn main() -> Result<()> {
 
     print!("{}", output);
 
-    process::exit(1)
+    if total > 0 {
+        process::exit(1)
+    }
+
+    Ok(())
 }
 
 fn run_swiftlint() -> Result<String> {
