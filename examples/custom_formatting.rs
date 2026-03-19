@@ -3,7 +3,7 @@
 //! This example shows how to create custom formatting logic
 //! using swizzy's parsing capabilities.
 
-use swizzy::{SwiftlintIssue, group_issues_by_file, parse_swiftlint_output};
+use swizzy::{group_issues_by_file, parse_swiftlint_output};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let json_input = r#"[
@@ -40,7 +40,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("=== SwiftLint Issues Summary ===\n");
 
     for (file, file_issues) in &grouped_issues {
-        println!("📁 {}", file);
+        println!("📁 {file}");
 
         for issue in file_issues {
             match issue.severity.as_str() {
@@ -70,15 +70,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
 
             if let Some(rule_id) = &issue.rule_id {
-                println!("     Rule: {}", rule_id);
+                println!("     Rule: {rule_id}");
             }
         }
         println!();
     }
 
     println!("=== Final Summary ===");
-    println!("🔴 Errors: {}", error_count);
-    println!("🟡 Warnings: {}", warning_count);
+    println!("🔴 Errors: {error_count}");
+    println!("🟡 Warnings: {warning_count}");
     println!("📁 Files affected: {}", grouped_issues.len());
     println!("📊 Total issues: {}", error_count + warning_count);
 

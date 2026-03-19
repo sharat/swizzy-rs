@@ -3,7 +3,7 @@
 //! This example demonstrates how to use swizzy as a library to parse
 //! and format SwiftLint JSON output programmatically.
 
-use swizzy::{parse_swiftlint_output, group_issues_by_file, format_issues_output};
+use swizzy::{format_issues_output, group_issues_by_file, parse_swiftlint_output};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Sample SwiftLint JSON output
@@ -47,9 +47,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Format for display (without colors for this example)
     println!("\nFormatted output:");
     let (formatted_output, total_issues) = format_issues_output(grouped_issues, false);
-    print!("{}", formatted_output);
+    print!("{formatted_output}");
 
-    println!("Total issues processed: {}", total_issues);
+    println!("Total issues processed: {total_issues}");
 
     Ok(())
 }

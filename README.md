@@ -105,7 +105,7 @@ swizzy --help       # Show help information
 ## Requirements
 
 - SwiftLint (for direct execution mode)
-- Rust 1.70+ (for building from source)
+- Rust 1.85+ (for building from source; required by Rust 2024 edition)
 
 ## Contributing
 

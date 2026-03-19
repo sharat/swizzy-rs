@@ -1,6 +1,6 @@
 // Simple integration tests that work with the refactored functions
 
-use swizzy::{SwiftlintIssue, group_issues_by_file, parse_swiftlint_output};
+use swizzy::{group_issues_by_file, parse_swiftlint_output};
 
 #[test]
 fn test_end_to_end_parsing_and_grouping() {

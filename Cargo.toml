@@ -1,7 +1,8 @@
 [package]
 name = "swizzy"
-version = "1.1.0"
+version = "1.1.1"
 edition = "2024"
+rust-version = "1.85"
 authors = ["Sarath C <csarath@gmail.com>"]
 description = "A fast, developer-friendly SwiftLint output formatter that groups issues by file and provides clickable file paths for editor integration"
 license = "MIT"
@@ -11,12 +12,14 @@ documentation = "https://docs.rs/swizzy"
 readme = "README.md"
 keywords = ["swiftlint", "swift", "linter", "formatter", "development-tools"]
 categories = ["command-line-utilities", "development-tools"]
-exclude = [
-    "output.png",
-    "anonymized_lint.json",
-    "test.sh",
-    "target/",
-    ".github/"
+include = [
+    "LICENSE",
+    "README.md",
+    "Cargo.toml",
+    "Cargo.lock",
+    "src/**/*",
+    "examples/**/*",
+    "tests/**/*",
 ]
 
 [[bin]]

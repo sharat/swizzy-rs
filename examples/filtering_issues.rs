@@ -75,7 +75,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut rule_vec: Vec<_> = rule_counts.iter().collect();
     rule_vec.sort_by(|a, b| b.1.cmp(a.1));
     for (rule, count) in rule_vec {
-        println!("  {}: {} occurrences", rule, count);
+        println!("  {rule}: {count} occurrences");
     }
 
     // Find files with most issues
@@ -90,7 +90,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for (file, count) in file_vec.iter().take(3) {
         println!(
             "  {}: {} issues",
-            file.split('/').last().unwrap_or(file),
+            file.split('/').next_back().unwrap_or(file),
             count
         );
     }
@@ -115,7 +115,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         for issue in critical_issues {
             println!(
                 "  {} (line {}): {}",
-                issue.file.split('/').last().unwrap_or(&issue.file),
+                issue.file.split('/').next_back().unwrap_or(&issue.file),
                 issue.line.unwrap_or(0),
                 issue.reason
             );

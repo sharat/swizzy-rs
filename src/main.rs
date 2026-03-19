@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
 use colored::control;
 use std::{
-    io::{self, IsTerminal, Read},
+    io::{self, IsTerminal, Read, Write},
     process,
 };
 use swizzy::{format_issues_output, group_issues_by_file, parse_swiftlint_output};
@@ -39,6 +39,7 @@ fn main() -> Result<()> {
     print!("{output}");
 
     if total > 0 {
+        let _ = io::stdout().flush();
         process::exit(EXIT_CODE_WITH_ISSUES);
     }
 
