@@ -181,11 +181,11 @@ pub fn parse_swiftlint_output(input: &str) -> Result<Vec<SwiftlintIssue>> {
 /// assert_eq!(grouped.get("FileA.swift").unwrap().len(), 2);
 /// ```
 pub fn group_issues_by_file(issues: Vec<SwiftlintIssue>) -> BTreeMap<String, Vec<SwiftlintIssue>> {
-    let mut grouped = BTreeMap::new();
+    let mut grouped: BTreeMap<String, Vec<SwiftlintIssue>> = BTreeMap::new();
     for issue in issues {
         grouped
             .entry(issue.file.clone())
-            .or_insert_with(Vec::new)
+            .or_default()
             .push(issue);
     }
     grouped
@@ -228,49 +228,34 @@ pub fn group_issues_by_file(issues: Vec<SwiftlintIssue>) -> BTreeMap<String, Vec
 /// ```
 pub fn format_issue(issue: &SwiftlintIssue, file: &str, use_colors: bool) -> String {
     let line = issue.line.unwrap_or(DEFAULT_LINE_NUMBER);
+    let is_warning = issue.severity.to_lowercase() == SEVERITY_WARNING;
     let severity = if use_colors {
-        match issue.severity.to_lowercase().as_str() {
-            SEVERITY_WARNING => SEVERITY_WARNING.yellow(),
-            _ => SEVERITY_ERROR.red(),
-        }
+        if is_warning { SEVERITY_WARNING.yellow() } else { SEVERITY_ERROR.red() }
     } else {
-        match issue.severity.to_lowercase().as_str() {
-            SEVERITY_WARNING => ColoredString::from(SEVERITY_WARNING),
-            _ => ColoredString::from(SEVERITY_ERROR),
-        }
+        ColoredString::from(if is_warning { SEVERITY_WARNING } else { SEVERITY_ERROR })
     };
 
     // Include file path per line for clickable links in editors
-    let loc = issue
-        .character
-        .map_or_else(|| format!("{line}"), |c| format!("{line}:{c}"));
-
-    let mut output = if use_colors {
-        format!(
-            "  {} {}:{}  {}  {}\n",
-            " ".dimmed(),
-            file.dimmed(),
-            loc.dimmed(),
-            severity,
-            issue.reason.trim_end_matches('.')
-        )
-    } else {
-        format!(
-            "  {} {}:{}  {}  {}\n",
-            " ",
-            file,
-            loc,
-            severity,
-            issue.reason.trim_end_matches('.')
-        )
+    let loc = match issue.character {
+        Some(c) => format!("{line}:{c}"),
+        None => format!("{line}"),
     };
 
+    let dim = |s: &str| -> ColoredString {
+        if use_colors { s.dimmed() } else { ColoredString::from(s) }
+    };
+
+    let mut output = format!(
+        "  {} {}:{}  {}  {}\n",
+        dim(" "),
+        dim(file),
+        dim(&loc),
+        severity,
+        issue.reason.trim_end_matches('.')
+    );
+
     if let Some(rule) = &issue.rule_id {
-        if use_colors {
-            output.push_str(&format!("     {} {}\n", "rule:".dimmed(), rule.dimmed()));
-        } else {
-            output.push_str(&format!("     rule: {}\n", rule));
-        }
+        output.push_str(&format!("     {} {}\n", dim("rule:"), dim(rule)));
     }
 
     output
@@ -338,16 +323,11 @@ pub fn format_issues_output(
         output.push('\n');
     }
 
+    let plural = if total > 1 { "s" } else { "" };
     if use_colors {
-        writeln!(
-            output,
-            "{} {total} problem{}",
-            "✖".red().bold(),
-            if total > 1 { "s" } else { "" }
-        )
-        .unwrap();
+        writeln!(output, "{} {total} problem{plural}", "✖".red().bold()).unwrap();
     } else {
-        writeln!(output, "✖ {total} problem{}", if total > 1 { "s" } else { "" }).unwrap();
+        writeln!(output, "✖ {total} problem{plural}").unwrap();
     }
     (output, total)
 }
